@@ -2,14 +2,13 @@ import platform
 import sys
 
 import vlc
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
 
 class Player(QtWidgets.QMainWindow):
     """A simple Media Player using VLC and Qt
     """
-
 
 
     def __init__(self, master=None):
