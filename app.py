@@ -67,7 +67,7 @@ class PlayList(QObject):
         trackToPlay = self.current % len(self.trackList)
 
         print("current: {}".format(trackToPlay))
-        self.player.play(self.trackList[trackToPlay])
+        self.player.play(self.trackList[trackToPlay].url)
 
 
 class VlcPlayer(QObject):
@@ -84,7 +84,7 @@ def main():
     """
     app = QtWidgets.QApplication(sys.argv)
 
-    dataSource = DataSource()
+    dataSource = DataSource("https://my-json-server.typicode.com/ochkarik05/jsonservers/videos")
 
     player = VlcPlayer()
 

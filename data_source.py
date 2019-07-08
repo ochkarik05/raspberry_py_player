@@ -1,10 +1,23 @@
-from PyQt5.QtCore import QObject, pyqtSignal
+import json
+import urllib.request
+
+
+class VideoItem:
+
+    def __init__(self, itemJson):
+        self.itemJson = itemJson
+
+    @property
+    def url(self):
+        return self.itemJson["sources"][0]
 
 
 class DataSource(object):
 
-    playListLoaded = pyqtSignal([str])
+    def __init__(self, url):
+        self.url = url
 
     def load(self):
         print("loading data...")
-        return ["one", "two", "thee"]
+        response = urllib.request.urlopen(self.url)
+        return [VideoItem(n) for n in json.loads(response.read())]
