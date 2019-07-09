@@ -5,7 +5,7 @@ from PyQt5 import QtWidgets
 
 from data_source import DataSource
 from main_window import MainWindow
-from vlc_player import VlcPlayer
+from player import Player
 
 
 class DataLoader(QRunnable):
@@ -88,7 +88,7 @@ def main():
 
     dataSource = DataSource("https://my-json-server.typicode.com/ochkarik05/jsonservers/videos")
 
-    player = VlcPlayer()
+    player = Player()
 
     playList = PlayList(player)
 

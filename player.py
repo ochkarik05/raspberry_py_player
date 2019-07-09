@@ -5,7 +5,7 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import pyqtSignal, QTimer
 
 
-class VlcPlayer(QtWidgets.QWidget):
+class Player(QtWidgets.QWidget):
     trackFinished = pyqtSignal()
 
     def __init__(self):
