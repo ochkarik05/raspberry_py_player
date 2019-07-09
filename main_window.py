@@ -7,4 +7,3 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self, master)
         self.setCentralWidget(player)
 
-        # self.setWindowState(Qt.WindowFullScreen)
