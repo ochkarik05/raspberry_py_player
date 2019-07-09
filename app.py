@@ -1,41 +1,52 @@
 import sys
 
-from PyQt5.QtCore import QObject, pyqtSignal, QThread, QTimer, QRunnable, QThreadPool
+from PyQt5.QtCore import QObject, pyqtSignal, QTimer, QRunnable, QThreadPool
 from PyQt5 import QtWidgets
 
 from data_source import DataSource
+from main_window import MainWindow
+from vlc_player import VlcPlayer
+
 
 class DataLoader(QRunnable):
 
-    def __init__(self, dataSource, signal):
+    def __init__(self, dataSource, signal, catId = None):
         super().__init__()
 
         self.dataSource = dataSource
         self.signal = signal
+        self.catId = catId
 
 
     def run(self):
-        result = self.dataSource.load()
+        result = self.dataSource.load(self.catId)
         self.signal.emit(result)
 
 class PlayListScanner(QObject):
 
     dataLoaded = pyqtSignal(list)
+    catId = 1
 
     def __init__(self, dataSource):
         super().__init__()
         self.dataSource = dataSource
         self.timer = QTimer()
-        self.timer.setInterval(5000)
+        self.timer.setInterval(30000)
         self.timer.timeout.connect(self.on_timer)
         self.timer.start()
-
+        self.on_timer()
 
     def __del__(self):
         self.timer.stop()
 
     def on_timer(self):
-        runnable = DataLoader(self.dataSource, self.dataLoaded)
+        runnable = DataLoader(self.dataSource, self.dataLoaded, self.catId)
+        self.catId = self.catId + 1
+
+        if self.catId > 3:
+            self.catId = 0
+            self.timer.stop()
+
         QThreadPool.globalInstance().start(runnable)
 
 
@@ -70,15 +81,6 @@ class PlayList(QObject):
         self.player.play(self.trackList[trackToPlay].url)
 
 
-class VlcPlayer(QObject):
-
-    trackFinished = pyqtSignal()
-
-    def play(self, path):
-        print("play track: {}".format(path))
-        QTimer().singleShot(1000, self.trackFinished.emit)
-
-
 def main():
     """Entry point for our simple vlc player
     """
@@ -92,14 +94,15 @@ def main():
 
     playListScanner = PlayListScanner(dataSource)
 
-    playListScanner.dataLoaded.connect(playList.set_track_list)
+    playListScanner.dataLoaded.connect(player.playlist_play)
+
     player.trackFinished.connect(playList.next)
 
-    # gui = MainWindow(dataSource)
+    gui = MainWindow(player)
 
     # player = Player()
-    # player.show()
-    # player.resize(640, 480)
+    gui.show()
+    gui.resize(640, 480)
     sys.exit(app.exec_())
 
 
